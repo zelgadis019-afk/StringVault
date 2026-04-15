@@ -26,7 +26,7 @@ export async function createServerSupabaseClient() {
 
 export function createAdminSupabaseClient() {
   return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL=https://ryusldegksfowgqfqvdu.supabase.co,
+    process.env.SUPABASE_SERVICE_ROLE_KEY=sb_secret_NB9HEAucKmaFHfQ4jQOZ5A_x4oMOtlZ
   )
 }
