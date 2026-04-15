@@ -5,8 +5,8 @@ import { cookies } from 'next/headers'
 export async function createServerSupabaseClient() {
   const cookieStore = cookies()
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL=https://ryusldegksfowgqfqvdu.supabase.co,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Z2wcbcj07HRMVKIAScVU7g_ZuYZ88qJ,
     {
       cookies: {
         getAll() {
