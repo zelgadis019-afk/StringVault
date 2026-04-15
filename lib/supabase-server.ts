@@ -4,9 +4,10 @@ import { cookies } from 'next/headers'
 
 export async function createServerSupabaseClient() {
   const cookieStore = cookies()
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL=https://ryusldegksfowgqfqvdu.supabase.co,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Z2wcbcj07HRMVKIAScVU7g_ZuYZ88qJ,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
@@ -26,7 +27,7 @@ export async function createServerSupabaseClient() {
 
 export function createAdminSupabaseClient() {
   return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL=https://ryusldegksfowgqfqvdu.supabase.co,
-    process.env.SUPABASE_SERVICE_ROLE_KEY=sb_secret_NB9HEAucKmaFHfQ4jQOZ5A_x4oMOtlZ
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }
