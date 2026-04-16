@@ -31,3 +31,6 @@ export function createAdminSupabaseClient() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }
+
+console.log("HAS_URL", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log("HAS_SERVICE_ROLE_KEY", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
