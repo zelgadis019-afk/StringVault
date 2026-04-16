@@ -32,5 +32,8 @@ export function createAdminSupabaseClient() {
   )
 }
 
-console.log("HAS_URL", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log("HAS_SERVICE_ROLE_KEY", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log("NEXT_PUBLIC_SUPABASE_URL present:", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log("NEXT_PUBLIC_SUPABASE_URL prefix:", process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 25));
+
+console.log("SUPABASE_SERVICE_ROLE_KEY present:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log("SUPABASE_SERVICE_ROLE_KEY prefix:", process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 10));
