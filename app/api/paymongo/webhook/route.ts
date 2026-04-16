@@ -4,6 +4,9 @@ import { verifyWebhookSignature, createPayment } from '@/lib/paymongo'
 import { sendStatusUpdate } from '@/lib/email'
 import { Order } from '@/types'
 
+// ✅ Required for dynamic routes (replaces old config)
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text()
@@ -11,9 +14,10 @@ export async function POST(req: NextRequest) {
 
     // Verify signature
     if (process.env.PAYMONGO_WEBHOOK_SECRET) {
-      // PayMongo sends timestamp.signature format
       const sigParts = signature.split(',')
-      const sigValue = sigParts.find((p) => p.startsWith('se='))?.replace('se=', '') ?? ''
+      const sigValue =
+        sigParts.find((p) => p.startsWith('se='))?.replace('se=', '') ?? ''
+
       if (!verifyWebhookSignature(rawBody, sigValue)) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }
@@ -21,22 +25,24 @@ export async function POST(req: NextRequest) {
 
     const event = JSON.parse(rawBody)
     const { type, data } = event.data.attributes
+
     const supabase = createAdminSupabaseClient()
 
-    // source.chargeable — GCash / Maya redirected back, now charge the source
+    // source.chargeable — GCash / Maya
     if (type === 'source.chargeable') {
       const sourceId = data.id
       const amount = data.attributes.amount
       const orderId = data.attributes.metadata?.order_id
 
       if (!orderId) {
-        return NextResponse.json({ error: 'Missing order_id in metadata' }, { status: 400 })
+        return NextResponse.json(
+          { error: 'Missing order_id in metadata' },
+          { status: 400 }
+        )
       }
 
-      // Create a payment using the chargeable source
       await createPayment(sourceId, amount, orderId)
 
-      // Mark order as paid + confirmed
       const { data: order } = await supabase
         .from('orders')
         .update({ payment_status: 'Paid', status: 'Confirmed' })
@@ -49,7 +55,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // payment.paid — card payment succeeded
+    // payment.paid — card success
     if (type === 'payment.paid') {
       const orderId = data.attributes.metadata?.order_id
       if (!orderId) return NextResponse.json({ ok: true })
@@ -66,9 +72,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // payment.failed — card / source payment failed
+    // payment.failed
     if (type === 'payment.failed') {
       const orderId = data.attributes.metadata?.order_id
+
       if (orderId) {
         await supabase
           .from('orders')
@@ -78,11 +85,11 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true })
-  } catch (err: unknown) {
+  } catch (err) {
     console.error('Webhook error:', err)
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Webhook processing failed' },
+      { status: 500 }
+    )
   }
 }
-
-// PayMongo requires raw body; disable Next.js body parsing
-export const config = { api: { bodyParser: false } }
