@@ -1,3 +1,4 @@
+import 'server-only'
 import Link from 'next/link'
 import { createAdminSupabaseClient } from '@/lib/supabase-server'
 import ProductCard from '@/components/shop/ProductCard'
@@ -5,22 +6,32 @@ import { Product } from '@/types'
 
 async function getFeaturedProducts(): Promise<Product[]> {
   const supabase = createAdminSupabaseClient()
-  const { data } = await supabase
-    .from('products')
-    .select(`
-      *,
-      reviews(rating)
-    `)
-    .limit(6)
-    .order('created_at', { ascending: false })
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        reviews(rating)
+      `)
+      .limit(6)
+      .order('created_at', { ascending: false })
 
-  return (data ?? []).map((p: Product & { reviews?: { rating: number }[] }) => {
-    const approved = (p.reviews ?? [])
-    const avg = approved.length > 0
-      ? approved.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / approved.length
-      : 0
-    return { ...p, avg_rating: avg, review_count: approved.length, reviews: undefined }
-  })
+    if (error) {
+      console.error('Supabase error:', error)
+      return []
+    }
+
+    return (data ?? []).map((p: Product & { reviews?: { rating: number }[] }) => {
+      const approved = (p.reviews ?? [])
+      const avg = approved.length > 0
+        ? approved.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / approved.length
+        : 0
+      return { ...p, avg_rating: avg, review_count: approved.length, reviews: undefined }
+    })
+  } catch (e) {
+    console.error('Error fetching products:', e)
+    return []
+  }
 }
 
 export default async function HomePage() {
@@ -70,7 +81,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/track"
-              className="inline-flex items-center justify-center gap-2 border border-dark-400 text-gray-300 font-medium px-8 py-4 rounded-xl text-base hover:border-gold hover:text-gold transition-all"
+              className="inline-flex items-center justify-center gap-2 border border-dark-400 text-gray-300 font-medium px-8 py-4 rounded-xl text-base hover:border-gold hover:text-gold transition-colors"
             >
               Track Order
             </Link>
@@ -148,10 +159,10 @@ export default async function HomePage() {
               Born from a love of music
             </h2>
             <p className="text-gray-400 leading-relaxed mb-4">
-              StringVault was founded by musicians, for musicians. We know that the right instrument doesn't just sound good — it inspires you to play differently, to push further, and to find your voice.
+              StringVault was founded by musicians, for musicians. We know that the right instrument doesn't just sound good — it inspires you to play differently, to push further, and to find your unique voice.
             </p>
             <p className="text-gray-400 leading-relaxed mb-6">
-              We carefully source every guitar and accessory in our collection, from entry-level instruments for beginners to boutique pieces for seasoned professionals. Every string really does tell a story — what's yours?
+              We carefully source every guitar and accessory in our collection, from entry-level instruments for beginners to boutique pieces for seasoned professionals. Every string really does tell a story.
             </p>
             <Link href="/shop" className="inline-flex items-center gap-2 text-gold font-semibold hover:text-gold-light transition-colors">
               Explore our collection →

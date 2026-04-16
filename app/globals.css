@@ -7,8 +7,16 @@
     color-scheme: dark;
   }
 
+  * {
+    color-scheme: dark;
+  }
+
   html {
     scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-dark-DEFAULT text-white;
   }
 
   ::selection {
