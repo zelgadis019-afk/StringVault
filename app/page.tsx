@@ -1,3 +1,4 @@
+import 'server-only'
 import Link from 'next/link'
 import { createAdminSupabaseClient } from '@/lib/supabase-server'
 import ProductCard from '@/components/shop/ProductCard'
